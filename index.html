@@ -12,6 +12,8 @@ header h1{font-size:2.5em;color:#00ffaa;text-shadow:0 0 15px #00ffaa;animation:r
 header p{opacity:0.7;margin-top:5px;}
 .controls{text-align:center;margin:20px;}
 .controls input{padding:10px;width:250px;border-radius:5px;border:none;margin-bottom:10px;}
+.categories button{padding:8px 12px;margin:3px;border:none;border-radius:5px;cursor:pointer;background:#222;color:#00ffaa;transition:0.3s;}
+.categories button.active,.categories button:hover{background:#00ffaa;color:black;}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;padding:20px;}
 .card{background:#111;border:1px solid #00ffaa;border-radius:10px;padding:15px;cursor:pointer;transition:0.3s;overflow:hidden;}
 .card:hover{transform:scale(1.05);box-shadow:0 0 20px #00ffaa;}
@@ -37,11 +39,16 @@ header p{opacity:0.7;margin-top:5px;}
 
 <section class="controls">
   <input type="text" id="search" placeholder="Rechercher un fichier...">
+  <div class="categories">
+    <button data-cat="all" class="active">Tout</button>
+    <button data-cat="image">Image PNG</button>
+    <button data-cat="zip">Pack ZIP</button>
+    <button data-cat="txt">Fichier TXT</button>
+    <button data-cat="video">Vidéo MP4</button>
+  </div>
 </section>
 
-<section class="grid" id="grid">
-  <!-- Cartes générées dynamiquement -->
-</section>
+<section class="grid" id="grid"></section>
 
 <div class="modal" id="modal">
   <div class="modal-content">
@@ -60,17 +67,16 @@ header p{opacity:0.7;margin-top:5px;}
 </div>
 
 <script>
-// ===== Fichiers à afficher =====
-// Remplace cette liste par tous tes fichiers dans downloads/
+// ===== Liste des fichiers =====
 const files = [
-  {name:'Image PNG', file:'downloads/image1.png', desc:'Haute qualité', type:'image'},
-  {name:'Guide PDF', file:'downloads/guide1.pdf', desc:'Guide pratique', type:'file'},
-  {name:'Pack ZIP', file:'downloads/pack1.zip', desc:'Archive complète', type:'file'},
-  {name:'Fichier TXT', file:'downloads/file1.txt', desc:'Texte simple', type:'file'},
-  // ajoute autant que tu veux
+  {name:'Image Cool', file:'downloads/image1.png', desc:'Image PNG', type:'image', category:'image'},
+  {name:'Pack Archive', file:'downloads/pack1.zip', desc:'Archive ZIP complète', type:'file', category:'zip'},
+  {name:'Fichier Texte', file:'downloads/file1.txt', desc:'Simple TXT', type:'file', category:'txt'},
+  {name:'Vidéo Géniale', file:'downloads/video1.mp4', desc:'Vidéo MP4', type:'file', category:'video'},
+  // ajoute plus de fichiers ici...
 ];
 
-// Génération des cartes
+// ===== Génération des cartes =====
 const grid = document.getElementById('grid');
 files.forEach(f=>{
   const card = document.createElement('div');
@@ -79,6 +85,7 @@ files.forEach(f=>{
   card.dataset.name = f.name;
   card.dataset.desc = f.desc;
   card.dataset.type = f.type;
+  card.dataset.category = f.category;
 
   if(f.type==='image'){
     const img = document.createElement('img');
@@ -114,9 +121,7 @@ document.querySelectorAll('.card').forEach(card=>{
     } else {
       modalImg.style.display='none';
     }
-    downloadButtons.forEach(btn=>{
-      btn.href = card.dataset.file; // tu peux mettre différentes versions par plateforme si besoin
-    });
+    downloadButtons.forEach(btn=>{btn.href=card.dataset.file;});
     modal.style.display='flex';
   });
 });
@@ -129,6 +134,19 @@ document.getElementById('search').addEventListener('keyup', e=>{
   const val = e.target.value.toLowerCase();
   document.querySelectorAll('.card').forEach(card=>{
     card.style.display = (card.dataset.name.toLowerCase().includes(val) || card.dataset.desc.toLowerCase().includes(val))?'block':'none';
+  });
+});
+
+// ===== Filtre catégorie =====
+const categoryButtons = document.querySelectorAll('.categories button');
+categoryButtons.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    categoryButtons.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const cat = btn.dataset.cat;
+    document.querySelectorAll('.card').forEach(card=>{
+      card.style.display = (cat==='all' || card.dataset.category===cat)?'block':'none';
+    });
   });
 });
 </script>
