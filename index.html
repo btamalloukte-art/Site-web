@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultimate Download Hub</title>
+<title>Ultimate Local Download Hub</title>
 <style>
 body{margin:0;padding:0;font-family:Arial,sans-serif;background:#0b0b0b;color:#eaeaea;}
 header{text-align:center;padding:20px;}
@@ -17,9 +17,10 @@ nav button:hover{background:white;color:black;}
 .card img{width:100%;border-radius:5px;margin-bottom:10px;}
 .card h2{margin-bottom:5px;}
 .card p{font-size:0.9em;opacity:0.8;}
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);justify-content:center;align-items:center;z-index:100;}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);justify-content:center;align-items:center;z-index:100;}
 .modal-content{background:#111;padding:20px;border-radius:10px;max-width:90%;max-height:90%;text-align:center;position:relative;}
-.modal img, .modal video{max-width:100%;max-height:50vh;border-radius:5px;margin-bottom:15px;}
+.modal img, .modal video, .modal pre{max-width:100%;max-height:50vh;border-radius:5px;margin-bottom:15px;}
+.modal pre{color:#0f0;background:#111;padding:10px;overflow:auto;border-radius:5px;}
 .close{position:absolute;top:10px;right:15px;font-size:25px;color:#00ffaa;cursor:pointer;}
 .download-buttons{margin-top:15px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;}
 .download-buttons button{padding:10px 15px;background:#00ffaa;color:black;border:none;border-radius:5px;cursor:pointer;transition:0.3s;}
@@ -29,7 +30,7 @@ nav button:hover{background:white;color:black;}
 <body>
 
 <header>
-  <h1>Ultimate Download Hub</h1>
+  <h1>Ultimate Local Download Hub</h1>
   <p>Choisissez une catégorie puis un fichier à télécharger</p>
 </header>
 
@@ -64,7 +65,7 @@ const files = [
   // ZIP
   {name:'Pack1', file:'downloads/pack1.zip', desc:'Archive ZIP', type:'file', category:'zip'},
   // TXT
-  {name:'File1', file:'downloads/file1.txt', desc:'Fichier texte', type:'file', category:'txt'},
+  {name:'File1', file:'downloads/file1.txt', desc:'Fichier texte', type:'txt', category:'txt'},
   // Vidéo
   {name:'Vidéo1', file:'downloads/video1.mp4', desc:'Vidéo MP4', type:'video', category:'video'}
 ];
@@ -104,12 +105,15 @@ function showCategory(cat){
         const im=document.createElement('img'); im.src=f.file; mediaContainer.appendChild(im);
       } else if(f.type==='video'){
         const vid=document.createElement('video'); vid.src=f.file; vid.controls=true; mediaContainer.appendChild(vid);
+      } else if(f.type==='txt'){
+        fetch(f.file)
+          .then(resp => resp.text())
+          .then(txt => { const pre = document.createElement('pre'); pre.textContent=txt; mediaContainer.appendChild(pre); });
       } else {
         mediaContainer.innerHTML='<p>Fichier à télécharger</p>';
       }
       modal.style.display='flex';
       downloadBtn.dataset.file=f.file;
-      downloadBtn.dataset.name=f.name;
     });
   });
 }
@@ -118,16 +122,20 @@ function showCategory(cat){
 close.addEventListener('click', ()=>{modal.style.display='none';});
 window.addEventListener('click', e=>{if(e.target===modal) modal.style.display='none';});
 
-// ===== Download (fonctionne sur serveur local ou GitHub Pages) =====
+// ===== Download 100% local =====
 downloadBtn.addEventListener('click', ()=>{
   const filePath = downloadBtn.dataset.file;
-  const fileName = downloadBtn.dataset.file.split('/').pop();
-  const link = document.createElement('a');
-  link.href = filePath;
-  link.download = fileName;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  fetch(filePath)
+    .then(resp=>resp.blob())
+    .then(blob=>{
+      const a=document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filePath.split('/').pop();
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    })
+    .catch(err=>alert('Impossible de télécharger : fichier introuvable'));
 });
 
 // ===== Initial =====
