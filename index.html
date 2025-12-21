@@ -3,12 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultimate Download Hub</title>
+<title>Ultimate Download Hub Local</title>
 <style>
 body{margin:0;padding:0;font-family:Arial,sans-serif;background:#0b0b0b;color:#eaeaea;}
 header{text-align:center;padding:20px;}
-header h1{font-size:2.5em;color:#00ffaa;text-shadow:0 0 15px #00ffaa;animation:rgbglow 5s infinite alternate;}
-@keyframes rgbglow{0%{color:#ff0000;}14%{color:#ff9900;}28%{color:#33ff33;}42%{color:#00ccff;}56%{color:#cc33ff;}70%{color:#ff33cc;}84%{color:#ffff33;}100%{color:#00ffaa;}}
+header h1{font-size:2.5em;color:#00ffaa;text-shadow:0 0 15px #00ffaa;}
 header p{opacity:0.7;margin-top:5px;}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;padding:20px;}
 .card{background:#111;border:1px solid #00ffaa;border-radius:10px;padding:15px;cursor:pointer;transition:0.3s;overflow:hidden;}
@@ -28,8 +27,8 @@ header p{opacity:0.7;margin-top:5px;}
 <body>
 
 <header>
-  <h1>Ultimate Download Hub</h1>
-  <p>Cliquez sur une image pour l’afficher et la télécharger</p>
+  <h1>Ultimate Download Hub Local</h1>
+  <p>Cliquez sur une image pour la voir et la télécharger</p>
 </header>
 
 <section class="grid" id="grid"></section>
@@ -41,7 +40,7 @@ header p{opacity:0.7;margin-top:5px;}
     <img id="modal-img" src="" alt="">
     <p id="modal-desc"></p>
     <div class="download-buttons" id="download-buttons">
-      <button data-file="">Download</button>
+      <button id="download-btn">Download</button>
     </div>
   </div>
 </div>
@@ -61,7 +60,7 @@ const modalImg = document.getElementById('modal-img');
 const modalTitle = document.getElementById('modal-title');
 const modalDesc = document.getElementById('modal-desc');
 const close = document.getElementById('close');
-const downloadBtn = document.querySelector('#download-buttons button');
+const downloadBtn = document.getElementById('download-btn');
 
 // ===== Génération des cartes =====
 files.forEach(f=>{
@@ -82,6 +81,7 @@ files.forEach(f=>{
     modalImg.src=f.file;
     modal.style.display='flex';
     downloadBtn.dataset.file=f.file;
+    downloadBtn.dataset.name=f.name;
   });
 });
 
@@ -89,14 +89,23 @@ files.forEach(f=>{
 close.addEventListener('click', ()=>{modal.style.display='none';});
 window.addEventListener('click', e=>{if(e.target===modal) modal.style.display='none';});
 
-// ===== Bouton Download =====
+// ===== Download forcé même local =====
 downloadBtn.addEventListener('click', ()=>{
-  const link = document.createElement('a');
-  link.href = downloadBtn.dataset.file;
-  link.download = downloadBtn.dataset.file.split('/').pop();
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  const filePath = downloadBtn.dataset.file;
+  const fileName = downloadBtn.dataset.name;
+  fetch(filePath)
+    .then(resp => resp.blob())
+    .then(blob=>{
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filePath.split('/').pop(); // nom du fichier
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    })
+    .catch(err=>alert('Erreur : impossible de télécharger. Vérifie que le fichier existe.'));
 });
 </script>
 
