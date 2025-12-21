@@ -1,52 +1,50 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>Ultime Tools</title>
-</head>
-<body>
-  <h1>Bienvenue sur le site Ultime Tools</h1>
-  <p>Ce site est conçu pour vous aider à faire des choses puissantes</p>
-</body>
-</html>
-<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Download Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Download Hub RGB</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
-  <h1>DOWNLOAD HUB</h1>
+  <h1 id="title">DOWNLOAD HUB</h1>
   <p>Objets gratuits & téléchargeables</p>
 </header>
 
 <section class="controls">
   <input type="text" id="search" placeholder="Rechercher un objet...">
+  <div class="categories">
+    <button data-cat="all" class="active">Tout</button>
+    <button data-cat="text">Texte</button>
+    <button data-cat="image">Images</button>
+    <button data-cat="archive">Archives</button>
+    <button data-cat="pdf">PDF</button>
+  </div>
 </section>
 
 <section class="grid" id="grid">
 
-  <div class="card">
+  <div class="card" data-category="text">
     <h2>📄 Fichier Texte</h2>
     <p>Un simple fichier .txt</p>
     <a href="downloads/file1.txt" download>Télécharger</a>
   </div>
 
-  <div class="card">
+  <div class="card" data-category="image">
     <h2>🖼️ Image</h2>
     <p>Image PNG gratuite</p>
     <a href="downloads/image1.png" download>Télécharger</a>
   </div>
 
-  <div class="card">
+  <div class="card" data-category="archive">
     <h2>📦 Archive</h2>
     <p>Pack ZIP</p>
     <a href="downloads/pack.zip" download>Télécharger</a>
   </div>
 
-  <div class="card">
+  <div class="card" data-category="pdf">
     <h2>📘 Guide</h2>
     <p>Document PDF</p>
     <a href="downloads/guide.pdf" download>Télécharger</a>
@@ -55,9 +53,128 @@
 </section>
 
 <footer>
-  <p>© 2025 – Site Codé par "Bayane"</p>
+  <p>© 2025 – Site gratuit GitHub Pages</p>
 </footer>
 
 <script src="script.js"></script>
 </body>
 </html>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0b0b0b;
+  color: #eaeaea;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  text-align: center;
+  padding: 30px;
+}
+
+header h1 {
+  font-size: 3em;
+  animation: rgbglow 3s infinite alternate;
+}
+
+@keyframes rgbglow {
+  0% { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
+  25% { color: #ff9900; text-shadow: 0 0 15px #ff9900; }
+  50% { color: #33ff33; text-shadow: 0 0 20px #33ff33; }
+  75% { color: #00ccff; text-shadow: 0 0 20px #00ccff; }
+  100% { color: #cc33ff; text-shadow: 0 0 20px #cc33ff; }
+}
+
+header p {
+  opacity: 0.7;
+}
+
+.controls {
+  text-align: center;
+  margin: 20px;
+}
+
+.controls input {
+  padding: 10px;
+  width: 250px;
+  border-radius: 5px;
+  border: none;
+  margin-bottom: 10px;
+}
+
+.categories button {
+  padding: 8px 12px;
+  margin: 3px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background: #222;
+  color: #00ffaa;
+  transition: 0.3s;
+}
+
+.categories button.active, .categories button:hover {
+  background: #00ffaa;
+  color: black;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 20px;
+  padding: 30px;
+}
+
+.card {
+  background: #111;
+  border: 1px solid #00ffaa;
+  padding: 20px;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px #00ffaa;
+}
+
+.card h2 {
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+.card a {
+  display: inline-block;
+  margin-top: 15px;
+  background: #00ffaa;
+  color: black;
+  padding: 8px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+.card a:hover {
+  background: white;
+}
+
+footer {
+  text-align: center;
+  padding: 15px;
+  font-size: 0.8em;
+  opacity: 0.5;
+}
+
+/* MOBILE */
+@media(max-width: 600px){
+  header h1 { font-size: 2em; }
+  .grid { padding: 15px; }
+  .controls input { width: 90%; }
+}
