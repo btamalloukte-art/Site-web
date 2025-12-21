@@ -3,13 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Download Hub RGB</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Download Hub</title>
+  <style>
+    /* ===== CSS ===== */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#0b0b0b; color:#eaeaea; font-family:Arial,sans-serif; }
+    header { text-align:center; padding:30px; }
+    header h1 { font-size:3em; animation: rgbglow 3s infinite alternate; }
+    @keyframes rgbglow {
+      0%{color:#ff0000;text-shadow:0 0 10px #ff0000;}
+      25%{color:#ff9900;text-shadow:0 0 15px #ff9900;}
+      50%{color:#33ff33;text-shadow:0 0 20px #33ff33;}
+      75%{color:#00ccff;text-shadow:0 0 20px #00ccff;}
+      100%{color:#cc33ff;text-shadow:0 0 20px #cc33ff;}
+    }
+    header p { opacity:0.7; }
+    .controls { text-align:center; margin:20px; }
+    .controls input { padding:10px; width:250px; border-radius:5px; border:none; margin-bottom:10px; }
+    .categories button { padding:8px 12px; margin:3px; border:none; border-radius:5px; cursor:pointer; background:#222; color:#00ffaa; transition:0.3s; }
+    .categories button.active, .categories button:hover { background:#00ffaa; color:black; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:20px; padding:30px; }
+    .card { background:#111; border:1px solid #00ffaa; padding:20px; border-radius:10px; transition:0.3s; }
+    .card:hover { transform:scale(1.05); box-shadow:0 0 20px #00ffaa; }
+    .card h2 { margin-bottom:10px; }
+    .card p { font-size:0.9em; opacity:0.8; }
+    .card a { display:inline-block; margin-top:15px; background:#00ffaa; color:black; padding:8px 15px; border-radius:5px; text-decoration:none; }
+    .card a:hover { background:white; }
+    footer { text-align:center; padding:15px; font-size:0.8em; opacity:0.5; }
+
+    /* MOBILE */
+    @media(max-width:600px){
+      header h1 { font-size:2em; }
+      .grid { padding:15px; }
+      .controls input { width:90%; }
+    }
+  </style>
 </head>
 <body>
 
 <header>
-  <h1 id="title">DOWNLOAD HUB</h1>
+  <h1>DOWNLOAD HUB</h1>
   <p>Objets gratuits & téléchargeables</p>
 </header>
 
@@ -25,7 +58,6 @@
 </section>
 
 <section class="grid" id="grid">
-
   <div class="card" data-category="text">
     <h2>📄 Fichier Texte</h2>
     <p>Un simple fichier .txt</p>
@@ -56,125 +88,39 @@
   <p>© 2025 – Site gratuit GitHub Pages</p>
 </footer>
 
-<script src="script.js"></script>
+<script>
+  // ===== JS =====
+  const search = document.getElementById("search");
+  const cards = document.querySelectorAll(".card");
+  const categoryButtons = document.querySelectorAll(".categories button");
+
+  // Recherche
+  search.addEventListener("keyup", () => {
+    const value = search.value.toLowerCase();
+    cards.forEach(card => {
+      const text = card.innerText.toLowerCase();
+      card.style.display = text.includes(value) ? "block" : "none";
+    });
+  });
+
+  // Filtre par catégorie
+  categoryButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      categoryButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const cat = btn.dataset.cat;
+      cards.forEach(card => {
+        card.style.display = (cat === "all" || card.dataset.category === cat) ? "block" : "none";
+      });
+    });
+  });
+
+  // Animation hover
+  cards.forEach(card => {
+    card.addEventListener("mouseenter", () => { card.style.transform = "scale(1.05)"; });
+    card.addEventListener("mouseleave", () => { card.style.transform = "scale(1)"; });
+  });
+</script>
+
 </body>
 </html>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  background: #0b0b0b;
-  color: #eaeaea;
-  font-family: Arial, sans-serif;
-}
-
-header {
-  text-align: center;
-  padding: 30px;
-}
-
-header h1 {
-  font-size: 3em;
-  animation: rgbglow 3s infinite alternate;
-}
-
-@keyframes rgbglow {
-  0% { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
-  25% { color: #ff9900; text-shadow: 0 0 15px #ff9900; }
-  50% { color: #33ff33; text-shadow: 0 0 20px #33ff33; }
-  75% { color: #00ccff; text-shadow: 0 0 20px #00ccff; }
-  100% { color: #cc33ff; text-shadow: 0 0 20px #cc33ff; }
-}
-
-header p {
-  opacity: 0.7;
-}
-
-.controls {
-  text-align: center;
-  margin: 20px;
-}
-
-.controls input {
-  padding: 10px;
-  width: 250px;
-  border-radius: 5px;
-  border: none;
-  margin-bottom: 10px;
-}
-
-.categories button {
-  padding: 8px 12px;
-  margin: 3px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  background: #222;
-  color: #00ffaa;
-  transition: 0.3s;
-}
-
-.categories button.active, .categories button:hover {
-  background: #00ffaa;
-  color: black;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 20px;
-  padding: 30px;
-}
-
-.card {
-  background: #111;
-  border: 1px solid #00ffaa;
-  padding: 20px;
-  border-radius: 10px;
-  transition: 0.3s;
-}
-
-.card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 20px #00ffaa;
-}
-
-.card h2 {
-  margin-bottom: 10px;
-}
-
-.card p {
-  font-size: 0.9em;
-  opacity: 0.8;
-}
-
-.card a {
-  display: inline-block;
-  margin-top: 15px;
-  background: #00ffaa;
-  color: black;
-  padding: 8px 15px;
-  border-radius: 5px;
-  text-decoration: none;
-}
-
-.card a:hover {
-  background: white;
-}
-
-footer {
-  text-align: center;
-  padding: 15px;
-  font-size: 0.8em;
-  opacity: 0.5;
-}
-
-/* MOBILE */
-@media(max-width: 600px){
-  header h1 { font-size: 2em; }
-  .grid { padding: 15px; }
-  .controls input { width: 90%; }
-}
