@@ -10,10 +10,6 @@ header{text-align:center;padding:20px;}
 header h1{font-size:2.5em;color:#00ffaa;text-shadow:0 0 15px #00ffaa;animation:rgbglow 5s infinite alternate;}
 @keyframes rgbglow{0%{color:#ff0000;}14%{color:#ff9900;}28%{color:#33ff33;}42%{color:#00ccff;}56%{color:#cc33ff;}70%{color:#ff33cc;}84%{color:#ffff33;}100%{color:#00ffaa;}}
 header p{opacity:0.7;margin-top:5px;}
-.controls{text-align:center;margin:20px;}
-.controls input{padding:10px;width:250px;border-radius:5px;border:none;margin-bottom:10px;}
-.categories button{padding:8px 12px;margin:3px;border:none;border-radius:5px;cursor:pointer;background:#222;color:#00ffaa;transition:0.3s;}
-.categories button.active,.categories button:hover{background:#00ffaa;color:black;}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;padding:20px;}
 .card{background:#111;border:1px solid #00ffaa;border-radius:10px;padding:15px;cursor:pointer;transition:0.3s;overflow:hidden;}
 .card:hover{transform:scale(1.05);box-shadow:0 0 20px #00ffaa;}
@@ -25,30 +21,16 @@ header p{opacity:0.7;margin-top:5px;}
 .modal img{max-width:100%;max-height:50vh;border-radius:5px;margin-bottom:15px;}
 .close{position:absolute;top:10px;right:15px;font-size:25px;color:#00ffaa;cursor:pointer;}
 .download-buttons{margin-top:15px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;}
-.download-buttons a{padding:10px 15px;background:#00ffaa;color:black;text-decoration:none;border-radius:5px;transition:0.3s;}
-.download-buttons a:hover{background:white;}
-.back-button{padding:10px 15px;background:#222;color:#00ffaa;border:none;border-radius:5px;cursor:pointer;margin:20px;transition:0.3s;}
-.back-button:hover{background:#00ffaa;color:black;}
-@media(max-width:600px){.grid{padding:10px;}.controls input{width:90%;}header h1{font-size:2em;}}
+.download-buttons button{padding:10px 15px;background:#00ffaa;color:black;border:none;border-radius:5px;cursor:pointer;transition:0.3s;}
+.download-buttons button:hover{background:white;color:black;}
 </style>
 </head>
 <body>
 
 <header>
   <h1>Ultimate Download Hub</h1>
-  <p>Cliquez sur une catégorie pour voir les fichiers</p>
+  <p>Cliquez sur une image pour l’afficher et la télécharger</p>
 </header>
-
-<section class="controls">
-  <input type="text" id="search" placeholder="Rechercher un fichier...">
-  <div class="categories" id="category-buttons">
-    <button data-cat="all" class="active">Tout</button>
-    <button data-cat="image">Image PNG</button>
-    <button data-cat="zip">Pack ZIP</button>
-    <button data-cat="txt">Fichier TXT</button>
-    <button data-cat="video">Vidéo MP4</button>
-  </div>
-</section>
 
 <section class="grid" id="grid"></section>
 
@@ -59,116 +41,64 @@ header p{opacity:0.7;margin-top:5px;}
     <img id="modal-img" src="" alt="">
     <p id="modal-desc"></p>
     <div class="download-buttons" id="download-buttons">
-      <a href="#" download data-platform="ios">iOS</a>
-      <a href="#" download data-platform="android">Android</a>
-      <a href="#" download data-platform="windows">Windows</a>
-      <a href="#" download data-platform="mac">Mac</a>
-      <a href="#" download data-platform="linux">Linux</a>
+      <button data-file="">Download</button>
     </div>
   </div>
 </div>
 
-<button class="back-button" id="back-btn" style="display:none;">⬅ Retour aux catégories</button>
-
 <script>
-// ===== Données fichiers par catégorie =====
+// ===== Données fichiers =====
 const files = [
-  {name:'Sonic', file:'downloads/sonic.png', desc:'Image Sonic', type:'image', category:'image'},
-  {name:'Roblox', file:'downloads/roblox.png', desc:'Image Roblox', type:'image', category:'image'},
-  {name:'Fond Bleu', file:'downloads/fond_bleu.png', desc:'Image Fond Bleu', type:'image', category:'image'},
-  // Pack ZIP
-  {name:'Pack 1', file:'downloads/pack1.zip', desc:'Archive ZIP complète', type:'file', category:'zip'},
-  {name:'Pack 2', file:'downloads/pack2.zip', desc:'Archive ZIP complète', type:'file', category:'zip'},
-  // Fichier TXT
-  {name:'Fichier 1', file:'downloads/file1.txt', desc:'Texte simple', type:'file', category:'txt'},
-  {name:'Fichier 2', file:'downloads/file2.txt', desc:'Texte simple', type:'file', category:'txt'},
-  // Vidéo MP4
-  {name:'Vidéo 1', file:'downloads/video1.mp4', desc:'Vidéo MP4', type:'file', category:'video'},
-  {name:'Vidéo 2', file:'downloads/video2.mp4', desc:'Vidéo MP4', type:'file', category:'video'},
+  {name:'Sonic', file:'downloads/sonic.png', desc:'Image Sonic', type:'image'},
+  {name:'Roblox', file:'downloads/roblox.png', desc:'Image Roblox', type:'image'},
+  {name:'Fond Bleu', file:'downloads/fond_bleu.png', desc:'Image Fond Bleu', type:'image'},
 ];
 
 // ===== Variables =====
 const grid = document.getElementById('grid');
-const categoryButtons = document.querySelectorAll('#category-buttons button');
-const searchInput = document.getElementById('search');
 const modal = document.getElementById('modal');
 const modalImg = document.getElementById('modal-img');
 const modalTitle = document.getElementById('modal-title');
 const modalDesc = document.getElementById('modal-desc');
 const close = document.getElementById('close');
-const downloadButtons = document.getElementById('download-buttons').querySelectorAll('a');
-const backBtn = document.getElementById('back-btn');
+const downloadBtn = document.querySelector('#download-buttons button');
 
-// ===== Fonctions =====
-function showCards(list){
-  grid.innerHTML='';
-  list.forEach(f=>{
-    const card=document.createElement('div');
-    card.classList.add('card');
-    card.dataset.file=f.file;
-    card.dataset.name=f.name;
-    card.dataset.desc=f.desc;
-    card.dataset.type=f.type;
-    card.dataset.category=f.category;
-    if(f.type==='image'){
-      const img=document.createElement('img');
-      img.src=f.file;
-      img.alt=f.name;
-      card.appendChild(img);
-    }
-    const h2=document.createElement('h2'); h2.innerText=f.name;
-    const p=document.createElement('p'); p.innerText=f.desc;
-    card.appendChild(h2); card.appendChild(p);
-    grid.appendChild(card);
+// ===== Génération des cartes =====
+files.forEach(f=>{
+  const card=document.createElement('div');
+  card.classList.add('card');
+  const img=document.createElement('img');
+  img.src=f.file;
+  img.alt=f.name;
+  card.appendChild(img);
+  const h2=document.createElement('h2'); h2.innerText=f.name;
+  const p=document.createElement('p'); p.innerText=f.desc;
+  card.appendChild(h2); card.appendChild(p);
+  grid.appendChild(card);
 
-    card.addEventListener('click',()=>{
-      modalTitle.innerText=f.name;
-      modalDesc.innerText=f.desc;
-      if(f.type==='image'){modalImg.src=f.file; modalImg.style.display='block';}else{modalImg.style.display='none';}
-      downloadButtons.forEach(btn=>{btn.href=f.file;});
-      modal.style.display='flex';
-    });
+  card.addEventListener('click',()=>{
+    modalTitle.innerText=f.name;
+    modalDesc.innerText=f.desc;
+    modalImg.src=f.file;
+    modal.style.display='flex';
+    downloadBtn.dataset.file=f.file;
   });
-}
-
-// ===== Initial affichage - tout =====
-showCards(files);
-
-// ===== Filtrage catégorie =====
-categoryButtons.forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    categoryButtons.forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const cat=btn.dataset.cat;
-    backBtn.style.display='block';
-    if(cat==='all'){showCards(files);}
-    else{showCards(files.filter(f=>f.category===cat));}
-  });
-});
-
-// ===== Bouton retour catégories =====
-backBtn.addEventListener('click', ()=>{
-  categoryButtons.forEach(b=>b.classList.remove('active'));
-  document.querySelector('#category-buttons button[data-cat="all"]').classList.add('active');
-  showCards(files);
-  backBtn.style.display='none';
-});
-
-// ===== Recherche =====
-searchInput.addEventListener('keyup', e=>{
-  const val=e.target.value.toLowerCase();
-  const filtered = files.filter(f=>f.name.toLowerCase().includes(val)||f.desc.toLowerCase().includes(val));
-  showCards(filtered);
 });
 
 // ===== Modal =====
 close.addEventListener('click', ()=>{modal.style.display='none';});
 window.addEventListener('click', e=>{if(e.target===modal) modal.style.display='none';});
+
+// ===== Bouton Download =====
+downloadBtn.addEventListener('click', ()=>{
+  const link = document.createElement('a');
+  link.href = downloadBtn.dataset.file;
+  link.download = downloadBtn.dataset.file.split('/').pop();
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+});
 </script>
 
 </body>
 </html>
-
-
-
-
