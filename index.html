@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Ultimate Download Hub</title>
+
+<meta name="description" content="Ultimate Download Hub - Téléchargements gratuits d’images PNG, packs ZIP, fichiers TXT et vidéos MP4.">
+<meta name="keywords" content="ultimate download hub, téléchargement gratuit, images png, zip, mp4, fichiers gratuits">
+<meta name="author" content="Bayane">
+
 <style>
 body{margin:0;padding:0;font-family:Arial,sans-serif;background:#0b0b0b;color:#eaeaea;}
 header{text-align:center;padding:20px;}
@@ -32,11 +38,12 @@ header p{opacity:0.7;margin-top:5px;}
 @media(max-width:600px){.grid{padding:10px;}.controls input{width:90%;}header h1{font-size:2em;}}
 </style>
 </head>
+
 <body>
 
 <header>
   <h1>Ultimate Download Hub</h1>
-  <p>Cliquez sur une catégorie pour voir les fichiers</p>
+  <p>Téléchargements gratuits d’images, ZIP, TXT et vidéos</p>
 </header>
 
 <section class="controls">
@@ -59,115 +66,69 @@ header p{opacity:0.7;margin-top:5px;}
     <img id="modal-img" src="" alt="">
     <p id="modal-desc"></p>
     <div class="download-buttons" id="download-buttons">
-      <a href="#" download data-platform="ios">iOS</a>
-      <a href="#" download data-platform="android">Android</a>
-      <a href="#" download data-platform="windows">Windows</a>
-      <a href="#" download data-platform="mac">Mac</a>
-      <a href="#" download data-platform="linux">Linux</a>
+      <a href="#" download>iOS</a>
+      <a href="#" download>Android</a>
+      <a href="#" download>Windows</a>
+      <a href="#" download>Mac</a>
+      <a href="#" download>Linux</a>
     </div>
   </div>
 </div>
 
-<button class="back-button" id="back-btn" style="display:none;">⬅ Retour aux catégories</button>
+<button class="back-button" id="back-btn" style="display:none;">⬅ Retour</button>
 
 <script>
-// ===== Données fichiers par catégorie =====
-const files = [
-  // Image PNG
-  {name:'Sonic', file:'downloads/sonic.png', desc:'Image Sonic', type:'image', category:'image'},
-  {name:'Roblox', file:'downloads/roblox.png', desc:'Image Roblox', type:'image', category:'image'},
-  {name:'Fond Bleu', file:'downloads/fond_bleu.png', desc:'Image Fond Bleu', type:'image', category:'image'},
-  // Pack ZIP
-  {name:'Pack 1', file:'downloads/pack1.zip', desc:'Archive ZIP complète', type:'file', category:'zip'},
-  {name:'Pack 2', file:'downloads/pack2.zip', desc:'Archive ZIP complète', type:'file', category:'zip'},
-  // Fichier TXT
-  {name:'Fichier 1', file:'downloads/file1.txt', desc:'Texte simple', type:'file', category:'txt'},
-  {name:'Fichier 2', file:'downloads/file2.txt', desc:'Texte simple', type:'file', category:'txt'},
-  // Vidéo MP4
-  {name:'Vidéo 1', file:'downloads/video1.mp4', desc:'Vidéo MP4', type:'file', category:'video'},
-  {name:'Vidéo 2', file:'downloads/video2.mp4', desc:'Vidéo MP4', type:'file', category:'video'},
+const files=[
+{name:'Sonic',file:'downloads/sonic.png',desc:'Image Sonic',type:'image',category:'image'},
+{name:'Roblox',file:'downloads/roblox.png',desc:'Image Roblox',type:'image',category:'image'},
+{name:'Fond Bleu',file:'downloads/fond_bleu.png',desc:'Image Fond Bleu',type:'image',category:'image'},
+{name:'Pack 1',file:'downloads/pack1.zip',desc:'Archive ZIP',type:'file',category:'zip'},
+{name:'Pack 2',file:'downloads/pack2.zip',desc:'Archive ZIP',type:'file',category:'zip'},
+{name:'Fichier 1',file:'downloads/file1.txt',desc:'Texte simple',type:'file',category:'txt'},
+{name:'Fichier 2',file:'downloads/file2.txt',desc:'Texte simple',type:'file',category:'txt'},
+{name:'Vidéo 1',file:'downloads/video1.mp4',desc:'Vidéo MP4',type:'file',category:'video'}
 ];
 
-// ===== Variables =====
-const grid = document.getElementById('grid');
-const categoryButtons = document.querySelectorAll('#category-buttons button');
-const searchInput = document.getElementById('search');
-const modal = document.getElementById('modal');
-const modalImg = document.getElementById('modal-img');
-const modalTitle = document.getElementById('modal-title');
-const modalDesc = document.getElementById('modal-desc');
-const close = document.getElementById('close');
-const downloadButtons = document.getElementById('download-buttons').querySelectorAll('a');
-const backBtn = document.getElementById('back-btn');
+const grid=document.getElementById('grid');
+const modal=document.getElementById('modal');
+const modalImg=document.getElementById('modal-img');
+const modalTitle=document.getElementById('modal-title');
+const modalDesc=document.getElementById('modal-desc');
+const downloadButtons=document.querySelectorAll('.download-buttons a');
 
-// ===== Fonctions =====
 function showCards(list){
-  grid.innerHTML='';
-  list.forEach(f=>{
-    const card=document.createElement('div');
-    card.classList.add('card');
-    card.dataset.file=f.file;
-    card.dataset.name=f.name;
-    card.dataset.desc=f.desc;
-    card.dataset.type=f.type;
-    card.dataset.category=f.category;
-    if(f.type==='image'){
-      const img=document.createElement('img');
-      img.src=f.file;
-      img.alt=f.name;
-      card.appendChild(img);
-    }
-    const h2=document.createElement('h2'); h2.innerText=f.name;
-    const p=document.createElement('p'); p.innerText=f.desc;
-    card.appendChild(h2); card.appendChild(p);
-    grid.appendChild(card);
-
-    card.addEventListener('click',()=>{
-      modalTitle.innerText=f.name;
-      modalDesc.innerText=f.desc;
-      if(f.type==='image'){modalImg.src=f.file; modalImg.style.display='block';}else{modalImg.style.display='none';}
-      downloadButtons.forEach(btn=>{btn.href=f.file;});
-      modal.style.display='flex';
-    });
-  });
+grid.innerHTML='';
+list.forEach(f=>{
+const card=document.createElement('div');
+card.className='card';
+if(f.type==='image'){
+const img=document.createElement('img');
+img.src=f.file;
+card.appendChild(img);
 }
-
-// ===== Initial affichage - tout =====
+card.innerHTML+=`<h2>${f.name}</h2><p>${f.desc}</p>`;
+card.onclick=()=>{
+modalTitle.innerText=f.name;
+modalDesc.innerText=f.desc;
+modalImg.style.display=f.type==='image'?'block':'none';
+modalImg.src=f.file;
+downloadButtons.forEach(b=>{
+b.href=f.file;
+b.setAttribute('download','');
+});
+modal.style.display='flex';
+};
+grid.appendChild(card);
+});
+}
 showCards(files);
 
-// ===== Filtrage catégorie =====
-categoryButtons.forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    categoryButtons.forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const cat=btn.dataset.cat;
-    backBtn.style.display='block';
-    if(cat==='all'){showCards(files);}
-    else{showCards(files.filter(f=>f.category===cat));}
-  });
-});
-
-// ===== Bouton retour catégories =====
-backBtn.addEventListener('click', ()=>{
-  categoryButtons.forEach(b=>b.classList.remove('active'));
-  document.querySelector('#category-buttons button[data-cat="all"]').classList.add('active');
-  showCards(files);
-  backBtn.style.display='none';
-});
-
-// ===== Recherche =====
-searchInput.addEventListener('keyup', e=>{
-  const val=e.target.value.toLowerCase();
-  const filtered = files.filter(f=>f.name.toLowerCase().includes(val)||f.desc.toLowerCase().includes(val));
-  showCards(filtered);
-});
-
-// ===== Modal =====
-close.addEventListener('click', ()=>{modal.style.display='none';});
-window.addEventListener('click', e=>{if(e.target===modal) modal.style.display='none';});
+document.getElementById('close').onclick=()=>modal.style.display='none';
 </script>
+
+<footer style="text-align:center;opacity:0.4;padding:10px;">
+© 2025 — Ultimate Download Hub — Codé par Bayane
+</footer>
 
 </body>
 </html>
-
-<title></title>2025 - Site codé par Bayane ©</title>
